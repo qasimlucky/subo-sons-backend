@@ -3,12 +3,16 @@ const app = express()
 const port = 8000
 const path = require('path');
 var bodyParser = require('body-parser');
+const cors = require('cors');
+
+
 
 
 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cors());
 
 app.use('/static', express.static(path.join(__dirname, './server/public/stock')))
 
