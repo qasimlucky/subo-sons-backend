@@ -20,21 +20,15 @@ const CreateAgent = async function (req, res){
          console.log(req.body)
         const {first_name,last_name,email,phone_number,password} = req.body
             const AgentList = await Agents.find();
-            //console.log(dealerList.length)
             if (AgentList.length ==0 ){
                 agent_collection_index = 0;
-                //console.log(dealer_collection_index)
             }else{
                 Robject =AgentList.slice(-1).pop()
                 agent_collection_index  =Robject.agent_collection_index ;
             }
             console.log(agent_collection_index)
             var agent_id = 'ss-agent-'+(Number(agent_collection_index)+1);
-                //console.log(dealer_id)
                 agent_collection_index = (Number(agent_collection_index)+1)
-                //console.log(dealer_collection_index)
-            
-            
             
             var agent = await Agents.create({
                 agent_id,
@@ -44,10 +38,7 @@ const CreateAgent = async function (req, res){
                 email,
                 phone_number,
                 password
-                
-                
             });
-
 
             res.status(200).json(success("Success",
                                             agent,
