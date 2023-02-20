@@ -59,7 +59,7 @@ const createStock = async function (req, res){
         var stock_id = 'ss-stock-'+(Number(stock_collection_index)+1);
             stock_collection_index = (Number(stock_collection_index)+1)
             if(req.file){
-                const stock_image =("https://subo-sons-backend.onrender.com/"+req.file.filename);
+                const stock_image =("https://subo-sons-backend.onrender.com/static"+req.file.filename);
                 var stock = await Stock.create({
                     stock_id,
                     stock_collection_index,
@@ -139,7 +139,7 @@ const createStock = async function (req, res){
         if(req.file){
             const  partner = JSON.parse(req.body.partner)
             console.log("this is req.file")
-            const stock_image =("https://subo-sons-backend.onrender.com/"+req.file.filename);
+            const stock_image =("https://subo-sons-backend.onrender.com/static/"+req.file.filename);
             const data = req.body;
             //var cleanData = await CleanData(data);
             const {stock_id,book_title,quantity,whole_sale_price,sale_price,description,auther,Publisher_name,purchase_price,isbn,categories,record_level} = req.body;

@@ -27,6 +27,12 @@ const BillSchema = new mongoose.Schema({
     bill_status: {type: String,
         default: 'Active'
     },
+    customer_name: {type: String,
+    default: null
+    },
+    customer_phone_number: {type: String,
+    default: null
+    },
     created_at:{
     type: Date,
     immutable: true,

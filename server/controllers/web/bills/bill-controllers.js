@@ -6,6 +6,8 @@ const Bills = require('../../../models/bill/bill');
 const Stock = require('../../../models/stock/stock');
 const Partners = require('../../../models/partners/partner');
 const Transaction = require('../../../models/partners/transaction');
+const Agents = require('../../../models/agent/agent');
+const AgentTransaction = require('../../../models/agent/aget-transaction')
 
 // Get user
 
@@ -24,9 +26,9 @@ const Transaction = require('../../../models/partners/transaction');
     const createBill = async function (req, res){ 
         try {
             console.log("this is create Bill")
-            //console.log(req.body)
+            console.log(req.body)
 
-            const {bill_total,bill_discount,bill_tax,bill_shipping,bill_items,partner} = req.body
+            const {bill_total,bill_discount,bill_tax,bill_shipping,bill_items,customer_name,customer_phone_number} = req.body
                 const billList = await Bills.find();
                 //console.log(billList.length)
                 if (billList.length ==0 ){
@@ -52,6 +54,8 @@ const Transaction = require('../../../models/partners/transaction');
                     bill_tax,
                     bill_shipping,
                     bill_items,
+                    customer_name,
+                    customer_phone_number
                     
                 }); 
 
@@ -93,7 +97,7 @@ const Transaction = require('../../../models/partners/transaction');
                             transaction_collection_index = (Number(transaction_collection_index)+1)
                         //console.log(bill_collection_index)
                         var partner_id = book_partners[i].partner_id;
-                        console.log(bill_id)
+                        //console.log(bill_id)
 
                         var percentage = book_partners[i].percentage
                         var accountBalance = ((percentage/100)*profit_price)
@@ -109,8 +113,8 @@ const Transaction = require('../../../models/partners/transaction');
 
                         const list = await Partners.find({partner_id:partner_id});
                         var preAccountBalance = list[0].account_balance
-                        console.log(list[0].account_balance)
-                        console.log("this is pre balance")
+                       // console.log(list[0].account_balance)
+                       // console.log("this is pre balance")
                         //console.log(preAccountBalance)
                         if(preAccountBalance){
                             var account_balance = (parseInt(preAccountBalance)+parseInt(accountBalance))
@@ -123,10 +127,54 @@ const Transaction = require('../../../models/partners/transaction');
 
                     }
                   }
+                  // agent work
+                  if(req.body.agent && req.body.agentpercentage){
+                    console.log(bill_total)
+                    console.log(bill_shipping)
+                    console.log(bill_tax)
+                    console.log(bill_discount)
+                    var agent_id = req.body.agent;
+                    var agentpercentage = req.body.agentpercentage
+                    var billBeforeExtra = (parseInt(bill_total)-parseInt(bill_shipping)-parseInt(bill_tax)+parseInt(bill_discount))
+                    console.log("required amount")
+                    console.log(billBeforeExtra)
+
+                    var current_commission_amount = ((agentpercentage/100)*billBeforeExtra);
+                    const list = await Agents.find({agent_id:agent_id});
+                    var preAccountBalance = list[0].commission_amount
+                    if(preAccountBalance){
+                        var commission_amount = (parseInt(preAccountBalance)+parseInt(current_commission_amount))
+                    }else{
+                        var commission_amount = current_commission_amount
+                    }
+
+                    const agentTransactionList = await AgentTransaction.find();
+                        //console.log(billList.length)
+                        if (agentTransactionList.length ==0 ){
+                            agent_transaction_collection_index = 0;
+                            //console.log(bill_collection_index)
+                        }else{
+                            Robject =agentTransactionList.slice(-1).pop()
+                            agent_transaction_collection_index  =Robject.agent_transaction_collection_index ;
+                        }
+                       // console.log(bill_collection_index)
+                        var agent_transaction_id = 'agent-trans-'+(Number(agent_transaction_collection_index)+1);
+                            //console.log(bill_id)
+                            agent_transaction_collection_index = (Number(agent_transaction_collection_index)+1)
+                        //console.log(bill_collection_index)
+
+                        var agetTransaction = await AgentTransaction.create({
+                            agent_transaction_id,
+                            agent_transaction_collection_index,
+                            bill_id,
+                            commission_amount:current_commission_amount,
+                            commission_percentage:agentpercentage,
+                            agent_id,  
+                        });
+                    const updatedAgentAccount = await Agents.findOneAndUpdate({agent_id:agent_id},{$set :{commission_amount:commission_amount}});
+
+                  }
                   
-                  //console.log(partner)
-
-
 
                 res.status(200).json(success("Success",
                                                 bill,
