@@ -34,8 +34,6 @@ var RouteUploadStockImage = multer({ storage: stockstorage,
         }else{            
           cb("Error: File upload only supports the " + "following filetypes - " + filetypes); 
         }
-      
-        
       } 
 }).single('file');
 
