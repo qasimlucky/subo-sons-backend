@@ -12,7 +12,6 @@ const Stock_Categories = require('../../../models/stock/categories')
 // Get stock
 const getStock = async function (req, res){    
     try {
-        
         const stockList = await Stock.find();
         res.send (stockList)
     } catch (error) { 
@@ -48,6 +47,7 @@ const createStock = async function (req, res){
         console.log("this is create stock")
         console.log(req.body)
         const  partner = JSON.parse(req.body.partner)
+        const  saleman = JSON.parse(req.body.saleman)
         const {book_title,quantity,whole_sale_price,sale_price,description,auther,Publisher_name,purchase_price,isbn,categories,record_level} = req.body
         const stockList = await Stock.find();
         if (stockList.length ==0 ){
@@ -59,7 +59,7 @@ const createStock = async function (req, res){
         var stock_id = 'ss-stock-'+(Number(stock_collection_index)+1);
             stock_collection_index = (Number(stock_collection_index)+1)
             if(req.file){
-                const stock_image =("https://subo-sons-backend.onrender.com/static"+req.file.filename);
+                const stock_image =("http://localhost:8000/static/"+req.file.filename);
                 var stock = await Stock.create({
                     stock_id,
                     stock_collection_index,
@@ -71,6 +71,7 @@ const createStock = async function (req, res){
                     auther ,
                     stock_image,
                     partner,
+                    saleman,
                     Publisher_name,
                     purchase_price,
                     isbn,
@@ -88,6 +89,7 @@ const createStock = async function (req, res){
                     description,
                     auther,
                     partner,
+                    saleman,
                     Publisher_name,
                     purchase_price,
                     isbn,

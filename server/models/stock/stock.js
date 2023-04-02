@@ -36,6 +36,7 @@ const StockSchema = new mongoose.Schema({
         default: 'Active'
     },
     partner: {type: Array},
+    saleman: {type: Array},
     Publisher_name: {type: String,
         default: null
     },
