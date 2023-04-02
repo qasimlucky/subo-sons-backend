@@ -6,6 +6,8 @@ const Bills = require('../../../models/bill/bill');
 const Stock = require('../../../models/stock/stock');
 const Partners = require('../../../models/partners/partner');
 const Transaction = require('../../../models/partners/transaction');
+const SalemanTransaction = require('../../../models/saleman/saleman-transaction');
+const Saleman = require('../../../models/saleman/saleman');
 const Agents = require('../../../models/agent/agent');
 const AgentTransaction = require('../../../models/agent/aget-transaction')
 
@@ -76,6 +78,11 @@ const AgentTransaction = require('../../../models/agent/aget-transaction')
 
                   }
 
+                  
+
+
+
+                  //partner transaction
                   for (let i = 0; i < bill_items.length; i++) {
                     //console.log(bill_items[i])
                     var profit_price = ((bill_items[i].whole_sale_price)-(bill_items[i].purchase_price))
@@ -127,6 +134,67 @@ const AgentTransaction = require('../../../models/agent/aget-transaction')
 
                     }
                   }
+
+                  //saleman transaction
+                  for (let i = 0; i < bill_items.length; i++) {
+                    //console.log(bill_items[i])
+                    var profit_price = ((bill_items[i].whole_sale_price)-(bill_items[i].purchase_price))
+                    var sell_quantity = bill_items[i].sell_quantity
+                    console.log("this is amount before percentage" + profit_price)
+                    var book_salemans =  bill_items[i].saleman
+                    for (let i = 0; i < book_salemans.length; i++) {
+
+                        const salemantransactionList = await SalemanTransaction.find();
+                        //console.log(billList.length)
+                        if (salemantransactionList.length ==0 ){
+                            saleman_transaction_collection_index = 0;
+                            //console.log(bill_collection_index)
+                        }else{
+                            Robject =salemantransactionList.slice(-1).pop()
+                            saleman_transaction_collection_index  =Robject.saleman_transaction_collection_index ;
+                        }
+                       // console.log(bill_collection_index)
+                        var saleman_transaction_id = 'st-trans-'+(Number(saleman_transaction_collection_index)+1);
+                            //console.log(bill_id)
+                            saleman_transaction_collection_index = (Number(saleman_transaction_collection_index)+1)
+                        //console.log(bill_collection_index)
+                        var saleman_id = book_salemans[i].saleman_id;
+                        //console.log(bill_id)
+
+                        var saleman_percentage = book_salemans[i].percentage
+                        var percentageBalance = ((saleman_percentage/100)*profit_price)
+                        console.log(percentageBalance)
+                        console.log(sell_quantity)
+                        var accountBalance = (percentageBalance*sell_quantity)
+
+                        console.log("his amount after percentage" + accountBalance)
+                        var salemantransaction = await SalemanTransaction.create({
+                            saleman_transaction_id,
+                            saleman_transaction_collection_index,
+                            bill_id,
+                            total_profit:accountBalance,
+                            saleman_id  
+                        }); 
+                        // acoount balance in partner account
+
+                        const list = await Saleman.find({saleman_id:saleman_id});
+                        var preAccountBalance = list[0].account_balance
+                       // console.log(list[0].account_balance)
+                       // console.log("this is pre balance")
+                        //console.log(preAccountBalance)
+                        if(preAccountBalance){
+                            var account_balance = (parseInt(preAccountBalance)+parseInt(accountBalance))
+                        }else{
+                            var account_balance = accountBalance
+                        }
+                        const updatedPatnerAccount = await Saleman.findOneAndUpdate({saleman_id:saleman_id},{$set :{account_balance:account_balance}});
+                        console.log("this is saleman pre balance")
+                        //console.log(account_balance)
+
+                    }
+                  }
+
+
                   // agent work
                   if(req.body.agent && req.body.agentpercentage){
                     console.log(bill_total)

@@ -25,6 +25,7 @@ const partnerRoutes = require('./server/routes/web/partners-route/partner-route'
 const agentRoutes = require('./server/routes/web/agent-route/agent-routes');
 const supplierRoute = require('./server/routes/web/supplier-route/supplier-route')
 const purchaseRoute = require('./server/routes/web/purchase-route/purchase-route')
+const SalemanRoute = require('./server/routes/web/saleman-route/saleman-route')
 
 app.use('/dealer', dealerRoutes)
 app.use('/stock', stockRoutes)
@@ -33,6 +34,7 @@ app.use('/partner', partnerRoutes)
 app.use('/agent', agentRoutes)
 app.use('/supplier', supplierRoute)
 app.use('/purchase', purchaseRoute)
+app.use('/saleman', SalemanRoute)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
